@@ -10,30 +10,30 @@
             <div style="display: inline-block; position:absolute; right: 20px">{{ backendVersion }}</div>
           </div>
           <el-container>
-            <el-form :model="form" label-width="140px" label-position="left" style="width: 100%">
+            <el-form :model="form" label-width="5rem" label-position="left" style="width: 100%">
               <el-form-item label="模式设置:">
-                <el-radio v-model="advanced" label="1">基础模式</el-radio>
+                <!-- <el-radio v-model="advanced" label="1">基础模式</el-radio> -->
                 <el-radio v-model="advanced" label="2">进阶模式</el-radio>
               </el-form-item>
               <el-form-item label="订阅链接:">
-                <el-input v-model="form.sourceSubUrl" type="textarea" rows="3"
-                  placeholder="支持订阅或ss/ssr/vmess链接，多个链接每行一个或用 | 分隔" @blur="saveSubUrl" />
+                <el-input v-model="form.sourceSubUrl" type="textarea" rows="5"
+                  placeholder="支持订阅或 ss/ssr/vmess/vless 链接，多个链接每行一个或用 | 分隔" @blur="saveSubUrl" />
               </el-form-item>
               <el-form-item label="客户端:">
-                <el-select v-model="form.clientType" style="width: 100%">
+                <el-select v-model="form.clientType" style="width: 50%">
                   <el-option v-for="(v, k) in options.clientTypes" :key="k" :label="k" :value="v"></el-option>
                 </el-select>
               </el-form-item>
 
               <div v-if="advanced === '2'">
-                <el-form-item label="后端地址:">
+                <!-- <el-form-item label="后端地址:">
                   <el-autocomplete style="width: 100%" v-model="form.customBackend" :fetch-suggestions="backendSearch"
                     placeholder="动动小手，（建议）自行搭建后端服务。例：http://127.0.0.1:25500/sub?">
                     <el-button slot="append" @click="gotoGayhub" icon="el-icon-link">前往项目仓库</el-button>
                   </el-autocomplete>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="远程配置:">
-                  <el-select v-model="form.remoteConfig" allow-create filterable placeholder="请选择" style="width: 100%">
+                  <el-select v-model="form.remoteConfig" allow-create filterable placeholder="请选择" style="width: 50%">
                     <el-option-group v-for="group in options.remoteConfig" :key="group.label" :label="group.label">
                       <el-option v-for="item in group.options" :key="item.value" :label="item.label"
                         :value="item.value"></el-option>
@@ -51,67 +51,67 @@
                   <el-input v-model="form.filename" placeholder="返回的订阅文件名" />
                 </el-form-item>
 
-                <el-form-item v-for="(param, i) in customParams" :key="i">
+                <el-form-item v-for="(param, i) in customParams" :key="i" label-width="50%">
                   <el-input slot="label" v-model="param.name" placeholder="自定义参数名">
                     <div slot="suffix" style="width: 10px;">:</div>
                   </el-input>
                   <el-input v-model="param.value" placeholder="自定义参数内容">
-                      <el-button slot="suffix" type="text" icon="el-icon-delete" style="margin-right: 5px" @click="customParams.splice(i, 1)"/>
+                    <el-button slot="suffix" type="text" icon="el-icon-delete" style="margin-right: 5px"
+                      @click="customParams.splice(i, 1)" />
                   </el-input>
                 </el-form-item>
 
                 <el-form-item label-width="0px">
-                  <el-row type="flex">
+                  <el-row type="flex" :gutter="10" align="middle">
+
+                    <!-- Node List 复选框 -->
                     <el-col>
-                      <el-checkbox v-model="form.nodeList" label="输出为 Node List" border></el-checkbox>
+                      <el-checkbox v-model="form.nodeList" label="Node List" border
+                        style="width: 100%; height: 2rem; display: flex; align-items: center; justify-content: center;">
+                      </el-checkbox>
                     </el-col>
-                    <el-popover placement="bottom" v-model="form.extraset">
-                      <el-row>
-                        <el-checkbox v-model="form.emoji" label="Emoji"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.scv" label="跳过证书验证"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.udp" @change="needUdp = true" label="启用 UDP"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.appendType" label="节点类型"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.sort" label="排序节点"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.fdn" label="过滤非法节点"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.expand" label="规则展开"></el-checkbox>
-                      </el-row>
-                      <el-button slot="reference">更多选项</el-button>
-                    </el-popover>
-                    <el-popover placement="bottom" style="margin-left: 10px">
-                      <el-row>
-                        <el-checkbox v-model="form.tpl.surge.doh" label="Surge.DoH"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.tpl.clash.doh" label="Clash.DoH"></el-checkbox>
-                      </el-row>
-                      <el-row>
-                        <el-checkbox v-model="form.insert" label="网易云"></el-checkbox>
-                      </el-row>
-                      <el-button slot="reference">定制功能</el-button>
-                    </el-popover>
-                    <el-popover placement="top-end" title="添加自定义转换参数" trigger="hover">
-                      <el-link type="primary" :href="subDocAdvanced" target="_blank" icon="el-icon-info">参考文档</el-link>
-                      <el-button slot="reference" @click="addCustomParam" style="margin-left: 10px">
-                        <i class="el-icon-plus"></i>
-                      </el-button>
-                    </el-popover>
+
+                    <!-- 更多选项 -->
+                    <el-col>
+                      <el-popover placement="bottom" v-model="form.extraset">
+                        <el-row><el-checkbox v-model="form.emoji" label="Emoji"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.scv" label="跳过证书验证"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.udp" @change="needUdp = true"
+                            label="启用 UDP"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.expand" label="展开规则"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.appendType" label="节点类型"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.sort" label="排序节点"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.fdn" label="过滤非法节点"></el-checkbox></el-row>
+                        <el-button slot="reference" style="width: 100%; height: 2rem;">更多选项</el-button>
+                      </el-popover>
+                    </el-col>
+
+                    <!-- 定制功能 -->
+                    <el-col>
+                      <el-popover placement="bottom">
+                        <el-row><el-checkbox v-model="form.tpl.surge.doh" label="Surge.DoH"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.tpl.clash.doh" label="Clash.DoH"></el-checkbox></el-row>
+                        <el-row><el-checkbox v-model="form.insert" label="网易云"></el-checkbox></el-row>
+                        <el-button slot="reference" style="width: 100%; height: 2rem;">其他</el-button>
+                      </el-popover>
+                    </el-col>
+
+                    <!-- 添加自定义转换参数 -->
+                    <el-col>
+                      <el-popover placement="top-end" title="添加自定义转换参数" trigger="hover">
+                        <el-link type="primary" :href="subDocAdvanced" target="_blank"
+                          icon="el-icon-info">参考文档</el-link>
+                        <el-button slot="reference" @click="addCustomParam" style="width: 100%; height: 2rem;">
+                          <i class="el-icon-plus"></i>
+                        </el-button>
+                      </el-popover>
+                    </el-col>
+
                   </el-row>
                 </el-form-item>
               </div>
 
-              <div style="margin-top: 50px"></div>
+              <div style="margin-top: 20px"></div>
 
               <el-divider content-position="center">
                 <i class="el-icon-magic-stick"></i>
@@ -130,7 +130,7 @@
                 </el-input>
               </el-form-item>
 
-              <el-form-item label-width="0px" style="margin-top: 40px; text-align: center">
+              <el-form-item label-width="0px" style="margin-top: 20px; text-align: center">
                 <el-button style="width: 140px" type="danger" @click="makeUrl"
                   :disabled="form.sourceSubUrl.length === 0">生成订阅链接</el-button>
                 <el-button style="width: 140px" type="danger" @click="makeShortUrl" :loading="loading"
@@ -155,7 +155,7 @@
     </el-row>
 
     <el-dialog :visible.sync="dialogUploadConfigVisible" :show-close="false" :close-on-click-modal="false"
-      :close-on-press-escape="false" width="700px">
+      :close-on-press-escape="false" width="90%">
       <div slot="title">
         Remote config upload
         <el-popover trigger="hover" placement="right" style="margin-left: 10px">
@@ -165,7 +165,7 @@
       </div>
       <el-form label-position="left">
         <el-form-item prop="uploadConfig">
-          <el-input v-model="uploadConfig" type="textarea" :autosize="{ minRows: 15, maxRows: 30 }" maxlength="10000"
+          <el-input v-model="uploadConfig" type="textarea" :autosize="{ minRows: 15, maxRows: 15 }" maxlength="10000"
             show-word-limit></el-input>
         </el-form-item>
       </el-form>
@@ -180,7 +180,7 @@
       <div slot="title">
         解析 Subconverter 链接
       </div>
-      <el-form label-position="left" :inline="true" >
+      <el-form label-position="left" :inline="true">
         <el-form-item prop="uploadConfig" label="订阅链接：" label-width="85px">
           <el-input v-model="loadConfig" style="width: 565px"></el-input>
         </el-form-item>
@@ -227,7 +227,7 @@ export default {
           ssd: "ssd",
           sssub: "sssub",
           ssr: "ssr",
-          ClashR: "clashr",          
+          ClashR: "clashr",
           V2Ray: "v2ray",
           Trojan: "trojan",
           Surge3: "surge&ver=3",
@@ -235,72 +235,52 @@ export default {
         backendOptions: [{ value: "http://127.0.0.1:25500/sub?" }],
         remoteConfig: [
           {
-            label: "universal",
+            label: "Universal",
             options: [
               {
-                label: "No-Urltest",
+                label: "BASIC",
                 value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/universal/no-urltest.ini"
-              },
-              {
-                label: "Urltest",
-                value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/universal/urltest.ini"
+                  "https://gist.githubusercontent.com/Misakamoe/f9eb77a91fd1a582cedf13e362123cf6/raw/Basic.ini"
               }
             ]
           },
           {
-            label: "customized",
+            label: "Customized",
             options: [
               {
-                label: "Maying",
+                label: "Misaka",
                 value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/customized/maying.ini"
+                  "https://gist.githubusercontent.com/Misakamoe/f9eb77a91fd1a582cedf13e362123cf6/raw/Custom.ini"
               },
               {
-                label: "Ytoo",
+                label: "YX-ADFull",
                 value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/customized/ytoo.ini"
+                  "https://raw.githubusercontent.com/Yixie2020/clashrule/master/YX-ADFull.ini"
               },
               {
-                label: "FlowerCloud",
+                label: "YND",
                 value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/customized/flowercloud.ini"
+                  "https://gist.githubusercontent.com/Misakamoe/f9eb77a91fd1a582cedf13e362123cf6/raw/DYNSS.ini"
               },
-              {
-                label: "Nexitally",
-                value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/customized/nexitally.ini"
-              },
-              {
-                label: "SoCloud",
-                value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/customized/socloud.ini"
-              },
-              {
-                label: "ARK",
-                value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/customized/ark.ini"
-              },
-              {
-                label: "ssrCloud",
-                value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/customized/ssrcloud.ini"
-              }
             ]
           },
           {
-            label: "Special",
+            label: "Extra",
             options: [
               {
-                label: "NeteaseUnblock(仅规则，No-Urltest)",
+                label: "ADLite",
                 value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/special/netease.ini"
+                  "https://gist.githubusercontent.com/Misakamoe/f9eb77a91fd1a582cedf13e362123cf6/raw/ADLite.ini"
               },
               {
-                label: "Basic(仅GEOIP CN + Final)",
+                label: "YX-ADLite",
                 value:
-                  "https://cdn.jsdelivr.net/gh/SleepyHeeead/subconverter-config@master/remote-config/special/basic.ini"
+                  "https://raw.githubusercontent.com/Yixie2020/clashrule/master/YX-ADLite.ini"
+              },
+              {
+                label: "DDJ",
+                value:
+                  "https://gist.githubusercontent.com/Misakamoe/f9eb77a91fd1a582cedf13e362123cf6/raw/DGJ.ini"
               }
             ]
           }
@@ -310,7 +290,7 @@ export default {
         sourceSubUrl: "",
         clientType: "",
         customBackend: "",
-        remoteConfig: "",
+        remoteConfig: "https://gist.githubusercontent.com/Misakamoe/f9eb77a91fd1a582cedf13e362123cf6/raw/Basic.ini",
         excludeRemarks: "",
         includeRemarks: "",
         filename: "",
@@ -318,7 +298,7 @@ export default {
         nodeList: false,
         extraset: false,
         sort: false,
-        udp: false,
+        udp: true,
         tfo: false,
         scv: true,
         fdn: false,
@@ -408,7 +388,7 @@ export default {
       const url = "surge://install-config?url=";
       window.open(url + this.customSubUrl);
     },
-    addCustomParam(){
+    addCustomParam() {
       this.customParams.push({
         name: "",
         value: "",
@@ -536,12 +516,12 @@ export default {
       const h = this.$createElement;
 
       this.$notify({
-        title: "隐私提示",
+        title: "FBI WARNING",
         type: "warning",
         message: h(
           "i",
           { style: "color: teal" },
-          "各种订阅链接（短链接服务除外）生成纯前端实现，无隐私问题。默认提供后端转换服务，隐私担忧者请自行搭建后端服务。"
+          "你正在使用原神自助下载服务"
         )
       });
     },
